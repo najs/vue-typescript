@@ -1,22 +1,21 @@
 <template>
-  <div class="todo">
-    <h1>{{ msg }}</h1>
-  
+  <div>
     <section class="todoapp" v-cloak>
       <header class="header">
+        <h1>todos</h1>
         <input class="new-todo" autofocus autocomplete="off" placeholder="What needs to be done?" v-model="newTodo" @keyup.enter="addTodo">
       </header>
       <section class="main" v-show="todos.length">
         <input id="toggle-all" class="toggle-all" type="checkbox" v-model="allDone">
         <label for="toggle-all">Mark all as complete</label>
         <ul class="todo-list">
-          <li class="todo" v-for="todo in filteredTodos" :key="todo.id" :class="{completed: todo.completed, editing: todo == editedTodo}">
+          <li class="todo" v-for="todo in filteredTodos" :key="todo.id" :class="{completed: todo.completed}">
             <div class="view">
               <input class="toggle" type="checkbox" v-model="todo.completed">
-              <label @dblclick="editTodo(todo)">{{todo.title}}</label>
+              <label>{{todo.title}}</label>
               <button class="destroy" @click="removeTodo(todo)"></button>
             </div>
-            <input class="edit" type="text" v-model="todo.title" v-todo-focus="todo == editedTodo" @blur="doneEdit(todo)" @keyup.enter="doneEdit(todo)" @keyup.esc="cancelEdit(todo)">
+            <input class="edit" type="text" v-model="todo.title">
           </li>
         </ul>
       </section>
@@ -25,45 +24,120 @@
 					<strong v-text="remaining"></strong> {{pluralize('item', remaining)}} left
 				</span>
         <ul class="filters">
-          <li><a href="#/all" :class="{selected: visibility == 'all'}">All</a></li>
-          <li><a href="#/active" :class="{selected: visibility == 'active'}">Active</a></li>
-          <li><a href="#/completed" :class="{selected: visibility == 'completed'}">Completed</a></li>
+          <li><a href="#/all" @click.prevent="visibility = 'all'">All</a></li>
+          <li><a href="#/active" @click.prevent="visibility = 'active'">Active</a></li>
+          <li><a href="#/completed" @click.prevent="visibility = 'completed'">Completed</a></li>
         </ul>
         <button class="clear-completed" @click="removeCompleted" v-show="todos.length > remaining">
           Clear completed
         </button>
       </footer>
     </section>
-    
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 
+interface Filter {
+  [name: string]: Function;
+}
 
+const filters: Filter = {
+  all: function (todos: Todo[]) {
+    return todos;
+  },
+  active: function (todos: Todo[]) {
+    return todos.filter(function (todo: Todo) {
+      return !todo.completed;
+    });
+  },
+  completed: function (todos: Todo[]) {
+    return todos.filter(function (todo: Todo) {
+      return todo.completed;
+    });
+  }
+};
 
-@Component
-export default class TodoList extends Vue {
-  @Prop() private msg!: string;
+interface Todo {
+  id: number;
+  title: string;
+  completed: boolean;
+}
+
+@Component({
+  name: 'HelloWorld',
+  components: {
+  }
+})
+export default class HelloWorld extends Vue {
+  todos: Todo[] = []
+  newTodo = ''
+  visibility = 'all'
+
+  get filteredTodos() {
+    return filters[this.visibility](this.todos);
+  }
+
+  get remaining() {
+    return filters.active(this.todos).length;
+  }
+
+  get allDone(){
+    return this.remaining === 0;
+  }
+
+  set allDone(value){
+    this.todos.forEach(function (todo) {
+      todo.completed = value;
+    });
+  }
+
+  pluralize (word: string, count: number) {
+    return word + (count === 1 ? '' : 's');
+  }
+
+  addTodo () {
+    const value = this.newTodo && this.newTodo.trim();
+    if (!value) {
+      return;
+    }
+    this.todos.push({ id: this.todos.length + 1, title: value, completed: false });
+    this.newTodo = '';
+  }
+
+  removeTodo (todo: Todo) {
+    const index = this.todos.indexOf(todo);
+    this.todos.splice(index, 1);
+  }
+
+  removeCompleted () {
+    this.todos = filters.active(this.todos);
+  }
+
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-  hr {margin: 20px 0;border: 0;border-top: 1px dashed #c5c5c5;border-bottom: 1px dashed #f7f7f7;}
-  
+  hr {
+    margin: 20px 0;
+    border: 0;
+    border-top: 1px dashed #c5c5c5;
+    border-bottom: 1px dashed #f7f7f7;
+  }
+
   .learn a {
     font-weight: normal;
     text-decoration: none;
     color: #b83f45;
   }
-  
+
   .learn a:hover {
     text-decoration: underline;
     color: #787e7e;
   }
-  
+
   .learn h3,
   .learn h4,
   .learn h5 {
@@ -72,29 +146,29 @@ export default class TodoList extends Vue {
     line-height: 1.2;
     color: #000;
   }
-  
+
   .learn h3 {
     font-size: 24px;
   }
-  
+
   .learn h4 {
     font-size: 18px;
   }
-  
+
   .learn h5 {
     margin-bottom: 0;
     font-size: 14px;
   }
-  
+
   .learn ul {
     padding: 0;
     margin: 0 0 30px 25px;
   }
-  
+
   .learn li {
     line-height: 20px;
   }
-  
+
   .learn p {
     font-size: 15px;
     font-weight: 300;
@@ -102,20 +176,20 @@ export default class TodoList extends Vue {
     margin-top: 0;
     margin-bottom: 0;
   }
-  
+
   #issue-count {
     display: none;
   }
-  
+
   .quote {
     border: none;
     margin: 20px 0 60px 0;
   }
-  
+
   .quote p {
     font-style: italic;
   }
-  
+
   .quote p:before {
     content: '“';
     font-size: 50px;
@@ -124,7 +198,7 @@ export default class TodoList extends Vue {
     top: -20px;
     left: 3px;
   }
-  
+
   .quote p:after {
     content: '”';
     font-size: 50px;
@@ -133,29 +207,29 @@ export default class TodoList extends Vue {
     bottom: -42px;
     right: 3px;
   }
-  
+
   .quote footer {
     position: absolute;
     bottom: -40px;
     right: 0;
   }
-  
+
   .quote footer img {
     border-radius: 3px;
   }
-  
+
   .quote footer a {
     margin-left: 5px;
     vertical-align: middle;
   }
-  
+
   .speech-bubble {
     position: relative;
     padding: 10px;
     background: rgba(0, 0, 0, .04);
     border-radius: 5px;
   }
-  
+
   .speech-bubble:after {
     content: '';
     position: absolute;
@@ -164,7 +238,7 @@ export default class TodoList extends Vue {
     border: 13px solid transparent;
     border-top-color: rgba(0, 0, 0, .04);
   }
-  
+
   .learn-bar > .learn {
     position: absolute;
     width: 272px;
@@ -176,19 +250,18 @@ export default class TodoList extends Vue {
     transition-property: left;
     transition-duration: 500ms;
   }
-  
+
   @media (min-width: 899px) {
     .learn-bar {
       width: auto;
       padding-left: 300px;
     }
-    
+
     .learn-bar > .learn {
       left: 8px;
     }
   }
-  
-  /*index.css*/
+
   html,
   body {
     margin: 0;
@@ -386,9 +459,9 @@ export default class TodoList extends Vue {
 
   .todo-list li .toggle + label {
     /*
-			Firefox requires `#` to be escaped - https://bugzilla.mozilla.org/show_bug.cgi?id=922433
-			IE and Edge requires *everything* to be escaped to render, so we do that instead of just the `#` - https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/7157459/
-		*/
+      Firefox requires `#` to be escaped - https://bugzilla.mozilla.org/show_bug.cgi?id=922433
+      IE and Edge requires *everything* to be escaped to render, so we do that instead of just the `#` - https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/7157459/
+    */
     background-image: url('data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%22-10%20-18%20100%20135%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2250%22%20fill%3D%22none%22%20stroke%3D%22%23ededed%22%20stroke-width%3D%223%22/%3E%3C/svg%3E');
     background-repeat: no-repeat;
     background-position: center left;
@@ -546,15 +619,15 @@ export default class TodoList extends Vue {
   }
 
   /*
-		Hack to remove background from Mobile Safari.
-		Can't use it globally since it destroys checkboxes in Firefox
-	*/
+    Hack to remove background from Mobile Safari.
+    Can't use it globally since it destroys checkboxes in Firefox
+  */
   @media screen and (-webkit-min-device-pixel-ratio:0) {
     .toggle-all,
     .todo-list li .toggle {
       background: none;
     }
-  
+
     .todo-list li .toggle {
       height: 40px;
     }
@@ -564,7 +637,7 @@ export default class TodoList extends Vue {
     .footer {
       height: 50px;
     }
-  
+
     .filters {
       bottom: 10px;
     }

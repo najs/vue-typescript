@@ -1,6 +1,6 @@
 <template>
 	<div class="home">
-		<TodoList msg="!!TODO LIST!!"/>
+		<TodoList msg="!!TODO LIST 만들기!!"/>
 	</div>
 </template>
 
