@@ -22,6 +22,11 @@ Vue.use(VueRouter)
     path: '/todo',
     name: 'Todo',
     component: () => import(/* webpackChunkName: "about" */ '../views/todo.vue')
+  },
+  {
+    path: '/qna',
+    name: 'QnA',
+    component: () => import(/* webpackChunkName: "about" */ '../views/qna.vue')
   }
 ]
 
