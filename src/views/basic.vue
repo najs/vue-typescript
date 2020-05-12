@@ -32,12 +32,8 @@ export default class ChoiceCountry extends Vue {
       {englishName: 'jp', koreanName: '일본'}
   ]*/
   get returnMessage() {
-    if(this.countrySelected) {
-      return this.countrySelected + '를(을) 선택하였습니다.';
-    }else {
-			// eslint-disable-next-line getter-return
-      return;
-    }
+    //return this.countrySelected && this.countrySelected + '를(을) 선택하였습니다.';
+    return this.countrySelected ? this.countrySelected + '를(을) 선택하였습니다.' : '';
   }
 }
 </script>
