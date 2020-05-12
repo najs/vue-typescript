@@ -6,7 +6,7 @@
       <router-link to="/todo">Todo</router-link> |
       <router-link to="/qna">QnA</router-link>
       <br>
-      <router-link to="/basic-ex">basic Explain</router-link><!-- |-->
+      <router-link to="/basic">basic</router-link><!-- |-->
     </div>
     <router-view/>
   </div>

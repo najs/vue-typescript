@@ -17,12 +17,12 @@
 <script lang="ts">
   import { Component,Vue } from 'vue-property-decorator';
   
-  interface AccordionData02 {
+  /*interface AccordionData02 {
     key: string;
     title: string;
     content: string;
     state: boolean;
-  }
+  }*/
   
   @Component
   export default class QnA extends Vue {
