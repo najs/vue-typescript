@@ -27,6 +27,11 @@ Vue.use(VueRouter)
     path: '/qna',
     name: 'QnA',
     component: () => import(/* webpackChunkName: "about" */ '../views/qna.vue')
+  },
+  {
+    path: '/basic-ex',
+    name: 'QnA',
+    /*component: () => import('../views/qna.vue')*/
   }
 ]
 
