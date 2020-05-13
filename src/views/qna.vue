@@ -1,32 +1,26 @@
+<!--
+1. accordionData01 데이터로 아코디언 ui를 만드세요.
+2. 컴포넌트를 만들어 accordionData01, accordionData02 데이터가 나오는 아코디언 두개를 뿌려주세요.
+3. <accordion one=true> 라는 속성을 넣어서 내용이 한개만 열릴지 여러개 열릴지 속성을 줘보세요.
+4. <accordion one=true open='2'> 2번째 내용이 열린채 로드가 되게 해주세요.
+5. <accordion :open='[2,3]'> 여러개 열리는 아코디언에서 두개 이상이 열려있는것을 해보세요.
+6. 제목이 클릭될때 content를 비동기로 가져온다면 어떻게해야할지 생각해보세요.
+-->
+
 <template>
-  <div class="QnA">
-    <ul>
-      <li
-          v-bind:key = "qna.key"
-          v-for="qna in accordionData02"
-      >
-        <strong class="q-title" v-on:click="qna.state = !qna.state"> {{ qna.title }}</strong>
-        <ul class="q-answer" v-if="qna.state">
-          <li v-bind:key = "qna.key + '-' + index" v-for="(value, index) in qna.content">{{ value }}</li>
-        </ul>
-      </li>
-    </ul>
-  </div>
+  <Accordion :arr-data="accordionData02"></Accordion>
 </template>
 
+
 <script lang="ts">
-  import { Component,Vue } from 'vue-property-decorator';
+  import {Component, Vue} from "vue-property-decorator";
+  import Accordion from "@/components/accordion.vue";
   
-  interface AccordionData02 {
-    key: string;
-    title: string;
-    content: string;
-    state: boolean;
-  }
-  
-  @Component
+  @Component({
+    components: {Accordion}
+  })
   export default class QnA extends Vue {
-    accordionData01 =  [
+    accordionData01 = [
       {
         key: 'faq01',
         title: '코로나바이러스는 어떤 바이러스인가요?',
@@ -52,7 +46,6 @@
         state:false
       }
     ]
-  
     accordionData02 = [
       {
         key: 'faq001',
@@ -93,9 +86,9 @@
       }
     ]
   }
-
+  
 </script>
 
 <style scoped>
-ul{list-style:none}
+
 </style>
